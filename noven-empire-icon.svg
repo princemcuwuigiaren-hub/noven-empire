@@ -1,0 +1,111 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+
+    <!-- Background gradient -->
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%"   stop-color="#0F1028"/>
+      <stop offset="100%" stop-color="#06060D"/>
+    </linearGradient>
+
+    <!-- N mark gradient — white-cool at top, indigo at bottom -->
+    <linearGradient id="ng" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%"   stop-color="#E8ECFF"/>
+      <stop offset="55%"  stop-color="#A5B4FC"/>
+      <stop offset="100%" stop-color="#4F46E5"/>
+    </linearGradient>
+
+    <!-- Clip the diagonal to the N bounding box -->
+    <clipPath id="nclip">
+      <rect x="96" y="82" width="322" height="350"/>
+    </clipPath>
+
+    <!-- Soft glow behind the N -->
+    <filter id="glow" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="14" result="blur"/>
+      <feColorMatrix in="blur" type="matrix"
+        values="0 0 0 0 0.31
+                0 0 0 0 0.28
+                0 0 0 0 0.89
+                0 0 0 0.6 0" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+
+    <!-- Etched line filter — subtle dark seam through diagonal -->
+    <filter id="etch">
+      <feGaussianBlur stdDeviation="1.5"/>
+    </filter>
+
+  </defs>
+
+  <!-- ── BACKGROUND ── -->
+  <rect width="512" height="512" rx="108" fill="url(#bg)"/>
+
+  <!-- Ambient indigo glow centred -->
+  <ellipse cx="256" cy="260" rx="170" ry="185" fill="#4338CA" opacity="0.1"/>
+
+  <!-- ── N MARK ── -->
+  <g filter="url(#glow)">
+
+    <!--
+      Left bar
+      Outer corners chamfered (top-left, bottom-left) — 22px chamfer
+      Rect would be: x=100 y=86 w=70 h=340 (right edge x=170, bottom y=426)
+    -->
+    <path
+      d="M 122,86
+         L 170,86
+         L 170,426
+         L 122,426
+         L 100,404
+         L 100,108
+         Z"
+      fill="url(#ng)"/>
+
+    <!--
+      Right bar
+      Outer corners chamfered (top-right, bottom-right) — 22px chamfer
+      Rect would be: x=342 y=86 w=70 h=340 (right edge x=412, bottom y=426)
+    -->
+    <path
+      d="M 342,86
+         L 390,86
+         L 412,108
+         L 412,404
+         L 390,426
+         L 342,426
+         Z"
+      fill="url(#ng)"/>
+
+    <!--
+      Diagonal
+      Direction: (100,86) area to (412,426) area
+      Parallelogram clipped to the N bounding box
+      Perpendicular offset: ~34px each side of the centre line
+    -->
+    <g clip-path="url(#nclip)">
+      <polygon
+        points="132,104 196,68 380,410 316,446"
+        fill="url(#ng)"/>
+    </g>
+
+  </g>
+
+  <!-- ── ETCHED SEAM through the diagonal ── -->
+  <!--
+    A thin dark line running the length of the diagonal,
+    suggesting machined precision / armor plating seam.
+    Clipped to the N bounding box so it stays inside the mark.
+  -->
+  <g clip-path="url(#nclip)">
+    <line
+      x1="164" y1="86"
+      x2="348" y2="426"
+      stroke="#0B0C1A"
+      stroke-width="3.5"
+      opacity="0.35"/>
+  </g>
+
+</svg>

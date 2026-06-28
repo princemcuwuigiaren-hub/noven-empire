@@ -1,0 +1,772 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Noven Empire</title>
+  <link rel="manifest" href="manifest.json" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --dark:    #0B0C1A;
+      --accent:  #6366F1;
+      --accent-l:#A5B4FC;
+      --white:   #FFFFFF;
+      --rule:    #E8E8F0;
+      --radius:  3px;
+    }
+
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Inter', sans-serif;
+      font-size: 15px;
+      line-height: 1.6;
+      overflow-x: hidden;
+      background: var(--dark);
+    }
+
+    /* ══════════════════════════════
+       NAV
+    ══════════════════════════════ */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 200;
+      height: 60px;
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      align-items: center;
+      padding: 0 1.5rem;
+      background: rgba(11, 12, 26, 0.94);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+    }
+
+    .nav-logo {
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 700;
+      font-size: 0.8rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: #F0F0FF;
+      text-align: center;
+      user-select: none;
+      grid-column: 2;
+    }
+
+    .nav-right { display: flex; justify-content: flex-end; }
+
+    .nav-hamburger {
+      background: none;
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: var(--radius);
+      padding: 0.48rem 0.52rem;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 4.5px;
+      transition: border-color 0.2s;
+    }
+
+    .nav-hamburger span {
+      display: block;
+      width: 19px;
+      height: 1.5px;
+      background: #8080A8;
+      transition: background 0.2s, transform 0.22s, opacity 0.22s;
+      transform-origin: center;
+    }
+
+    .nav-hamburger:hover { border-color: rgba(255,255,255,0.22); }
+    .nav-hamburger:hover span { background: #F0F0FF; }
+    .nav-hamburger.open span:nth-child(1) { transform: translateY(6px) rotate(45deg); }
+    .nav-hamburger.open span:nth-child(2) { opacity: 0; transform: scaleX(0); }
+    .nav-hamburger.open span:nth-child(3) { transform: translateY(-6px) rotate(-45deg); }
+
+    .nav-dropdown {
+      position: fixed;
+      top: 60px; left: 0; right: 0;
+      background: rgba(8, 8, 18, 0.98);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+      z-index: 199;
+      transform: translateY(-6px);
+      opacity: 0;
+      pointer-events: none;
+      transition: transform 0.2s ease, opacity 0.2s ease;
+    }
+
+    .nav-dropdown.open {
+      transform: translateY(0);
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    .nav-dropdown a {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 1.1rem 2rem;
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 0.82rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: #6060A0;
+      text-decoration: none;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+      transition: color 0.18s, padding-left 0.18s;
+    }
+
+    .nav-dropdown a:last-child { border-bottom: none; }
+    .nav-dropdown a:hover { color: #F0F0FF; padding-left: 2.5rem; }
+
+    .dropdown-num {
+      font-size: 0.58rem;
+      color: var(--accent-l);
+      opacity: 0.45;
+      letter-spacing: 0.1em;
+      min-width: 24px;
+    }
+
+    /* ══════════════════════════════
+       HERO
+    ══════════════════════════════ */
+    #hero {
+      min-height: 100vh;
+      background: var(--dark);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 6rem 2rem 4rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-radial {
+      position: absolute; inset: 0;
+      background: radial-gradient(ellipse 60% 55% at 50% 50%, rgba(99,102,241,0.16) 0%, transparent 65%);
+      pointer-events: none;
+    }
+
+    .hero-grid {
+      position: absolute; inset: 0;
+      background-image:
+        linear-gradient(rgba(165,180,252,0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(165,180,252,0.05) 1px, transparent 1px);
+      background-size: 60px 60px;
+      pointer-events: none;
+      mask-image: radial-gradient(ellipse 90% 90% at 50% 50%, black 10%, transparent 100%);
+      -webkit-mask-image: radial-gradient(ellipse 90% 90% at 50% 50%, black 10%, transparent 100%);
+    }
+
+    .hero-eyebrow {
+      position: relative;
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 0.7rem;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--accent-l);
+      margin-bottom: 1.5rem;
+      opacity: 0.65;
+      animation: fadeUp 0.9s ease both;
+    }
+
+    .hero-title {
+      position: relative;
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 700;
+      font-size: clamp(3.2rem, 11vw, 7rem);
+      letter-spacing: 0.02em;
+      text-transform: uppercase;
+      line-height: 0.92;
+      color: #F4F4FF;
+      margin-bottom: 1.75rem;
+      animation: fadeUp 0.9s 0.1s ease both;
+    }
+
+    .hero-tagline {
+      position: relative;
+      font-family: 'Inter', sans-serif;
+      font-weight: 300;
+      font-size: clamp(0.88rem, 2.5vw, 1rem);
+      color: #6060A0;
+      letter-spacing: 0.04em;
+      max-width: 340px;
+      animation: fadeUp 0.9s 0.2s ease both;
+    }
+
+    /* Scroll cue — no button, just an animated chevron */
+    .scroll-cue {
+      position: absolute;
+      bottom: 2.5rem;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      animation: fadeUp 0.9s 0.5s ease both;
+      cursor: pointer;
+      text-decoration: none;
+    }
+
+    .scroll-cue svg {
+      color: rgba(165,180,252,0.3);
+      animation: bounce 1.8s ease-in-out infinite;
+    }
+
+    @keyframes bounce {
+      0%, 100% { transform: translateX(-50%) translateY(0); opacity: 0.3; }
+      50%       { transform: translateX(-50%) translateY(6px); opacity: 0.65; }
+    }
+
+    /* ══════════════════════════════
+       PRODUCTS — white bg
+    ══════════════════════════════ */
+    .products-section-wrap { background: var(--white); }
+
+    #products {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 5rem 1.75rem;
+    }
+
+    .section-label {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 0.78rem;
+      font-weight: 600;
+      letter-spacing: 0.24em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 0.5rem;
+    }
+
+    .section-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 700;
+      font-size: clamp(1.7rem, 5vw, 2.4rem);
+      color: #0A0B18;
+      margin-bottom: 3rem;
+      letter-spacing: -0.02em;
+      line-height: 1.1;
+    }
+
+    /* Grid: 3px white gaps between dark cards */
+    .products-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 3px;
+      background: #DDDDE8;
+    }
+
+    /* ── CARDS ── */
+    .product-card {
+      background: linear-gradient(160deg, #0F0F24 0%, #07070E 100%);
+      border-top: 1.5px solid rgba(165,180,252,0.28);
+      padding: 1.75rem 1.6rem 1.75rem;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      transition: background 0.25s, border-color 0.25s;
+    }
+
+    /* Left border grows on hover */
+    .product-card::before {
+      content: '';
+      position: absolute;
+      left: 0; top: 0; bottom: 0;
+      width: 2px;
+      background: linear-gradient(to top, transparent, var(--accent-l), transparent);
+      transform: scaleY(0);
+      transform-origin: center;
+      transition: transform 0.38s cubic-bezier(0.4,0,0.2,1);
+    }
+
+    .product-card:hover {
+      background: linear-gradient(160deg, #17172E 0%, #0B0B18 100%);
+      border-top-color: rgba(165,180,252,0.7);
+    }
+
+    .product-card:hover::before { transform: scaleY(1); }
+
+    /* Card top row */
+    .card-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1.1rem;
+    }
+
+    .card-coord {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 0.6rem;
+      letter-spacing: 0.2em;
+      color: #454570;
+      font-weight: 500;
+    }
+
+    .card-arrow {
+      font-size: 1.1rem;
+      color: #383870;
+      line-height: 1;
+      transition: color 0.2s, transform 0.2s;
+    }
+
+    .product-card:hover .card-arrow {
+      color: var(--accent-l);
+      transform: translate(2px, -2px);
+    }
+
+    .card-name {
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 700;
+      font-size: 1.45rem;
+      color: #FFFFFF;
+      letter-spacing: 0.01em;
+      line-height: 1.15;
+      margin-bottom: 0.7rem;
+      flex: 1;
+    }
+
+    .card-desc {
+      font-size: 0.82rem;
+      color: #8484B8;
+      line-height: 1.7;
+      margin-bottom: 0;
+    }
+
+    /* ══════════════════════════════
+       ABOUT — white
+    ══════════════════════════════ */
+    .about-wrap {
+      background: var(--white);
+      border-top: 1px solid var(--rule);
+    }
+
+    #about {
+      padding: 5rem 1.75rem;
+      max-width: 640px;
+      margin: 0 auto;
+    }
+
+    .about-body {
+      font-weight: 300;
+      font-size: 1rem;
+      color: #52527A;
+      line-height: 1.95;
+      margin-top: 1.5rem;
+    }
+
+    .about-body strong { color: #0A0B18; font-weight: 600; }
+
+    /* ══════════════════════════════
+       FOOTER
+    ══════════════════════════════ */
+    footer {
+      background: var(--dark);
+      padding: 2.5rem 1.75rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-top: 1px solid rgba(255,255,255,0.04);
+    }
+
+    .footer-brand {
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 700;
+      font-size: 0.7rem;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: #20203A;
+    }
+
+    .footer-copy { font-size: 0.7rem; color: #20203A; letter-spacing: 0.04em; }
+
+    /* ══════════════════════════════
+       SLIDE PANEL — redesigned
+    ══════════════════════════════ */
+    .panel-overlay {
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.72);
+      z-index: 300;
+      opacity: 0; visibility: hidden;
+      transition: opacity 0.3s, visibility 0.3s;
+      cursor: pointer;
+    }
+
+    .panel-overlay.open { opacity: 1; visibility: visible; }
+
+    .slide-panel {
+      position: fixed;
+      top: 0; right: 0; bottom: 0;
+      width: min(500px, 100vw);
+      background: #07070E;
+      border-left: 1px solid rgba(255,255,255,0.05);
+      z-index: 301;
+      transform: translateX(100%);
+      transition: transform 0.38s cubic-bezier(0.4,0,0.2,1);
+      overflow-y: auto;
+      overflow-x: hidden;
+      display: flex;
+      flex-direction: column;
+      cursor: default;
+    }
+
+    .slide-panel.open { transform: translateX(0); }
+
+    /* Panel header zone — distinct indigo-dark band */
+    .panel-header-zone {
+      position: relative;
+      background: linear-gradient(145deg, #0E0D2E 0%, #0A0920 50%, #090912 100%);
+      padding: 1.75rem 2rem 2.25rem;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+
+    /* Grid inside header zone */
+    .panel-header-zone::before {
+      content: '';
+      position: absolute; inset: 0;
+      background-image:
+        linear-gradient(rgba(165,180,252,0.06) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(165,180,252,0.06) 1px, transparent 1px);
+      background-size: 36px 36px;
+      pointer-events: none;
+    }
+
+    /* Radial glow in header */
+    .panel-header-zone::after {
+      content: '';
+      position: absolute;
+      bottom: -30px; right: -30px;
+      width: 220px; height: 220px;
+      background: radial-gradient(circle, rgba(99,102,241,0.18) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .panel-topbar {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 2.5rem;
+      z-index: 1;
+    }
+
+    .panel-breadcrumb {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 0.6rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: rgba(165,180,252,0.3);
+    }
+
+    .panel-close-btn {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: var(--radius);
+      color: rgba(165,180,252,0.5);
+      padding: 0.38rem 0.85rem;
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 0.6rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: background 0.2s, border-color 0.2s, color 0.2s;
+    }
+
+    .panel-close-btn:hover {
+      background: rgba(255,255,255,0.1);
+      border-color: rgba(255,255,255,0.2);
+      color: #F0F0FF;
+    }
+
+    .panel-coord {
+      position: relative;
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 0.65rem;
+      letter-spacing: 0.25em;
+      color: rgba(165,180,252,0.5);
+      margin-bottom: 0.6rem;
+      z-index: 1;
+    }
+
+    .panel-name {
+      position: relative;
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 700;
+      font-size: clamp(2.2rem, 8vw, 3.2rem);
+      color: #F4F4FF;
+      letter-spacing: 0.01em;
+      line-height: 1;
+      z-index: 1;
+    }
+
+    /* Faded name watermark in the bg of header zone */
+    .panel-watermark {
+      position: absolute;
+      bottom: -0.5rem;
+      right: -0.25rem;
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 700;
+      font-size: 5rem;
+      color: var(--accent-l);
+      opacity: 0.06;
+      pointer-events: none;
+      user-select: none;
+      letter-spacing: 0.08em;
+      line-height: 1;
+      white-space: nowrap;
+    }
+
+    /* Panel body */
+    .panel-body {
+      padding: 2rem 2rem 3rem;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .panel-rule {
+      width: 100%;
+      height: 1px;
+      background: rgba(255,255,255,0.06);
+      margin-bottom: 1.75rem;
+    }
+
+    .panel-desc {
+      font-size: 0.94rem;
+      font-weight: 300;
+      color: #7070A8;
+      line-height: 1.95;
+    }
+
+    /* ══════════════════════════════
+       ANIMATIONS
+    ══════════════════════════════ */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(12px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ══════════════════════════════
+       RESPONSIVE
+    ══════════════════════════════ */
+    @media (max-width: 560px) {
+      #products { padding: 4rem 1.25rem; }
+      #about    { padding: 4rem 1.25rem; }
+      footer    { padding: 2rem 1.25rem; flex-direction: column; gap: 0.35rem; text-align: center; }
+      .products-grid { grid-template-columns: 1fr; }
+      .panel-header-zone { padding: 1.5rem 1.25rem 2rem; }
+      .panel-body { padding: 1.75rem 1.25rem 2.5rem; }
+      .panel-name { font-size: 2.2rem; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation: none !important; transition: none !important; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav>
+    <span class="nav-logo">Noven Empire</span>
+    <div class="nav-right">
+      <button class="nav-hamburger" id="nav-hamburger" aria-label="Menu" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- DROPDOWN -->
+  <div class="nav-dropdown" id="nav-dropdown">
+    <a href="#products" class="dropdown-link">
+      <span class="dropdown-num">01 ·</span>Products
+    </a>
+    <a href="#about" class="dropdown-link">
+      <span class="dropdown-num">02 ·</span>About
+    </a>
+  </div>
+
+  <!-- HERO -->
+  <section id="hero">
+    <div class="hero-radial"></div>
+    <div class="hero-grid"></div>
+    <p class="hero-eyebrow">Noven Empire</p>
+    <h1 class="hero-title">The Empire<br>You Build</h1>
+    <p class="hero-tagline">Where ambition becomes architecture.</p>
+    <a href="#products" class="scroll-cue" aria-label="Scroll to products">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+        <path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </a>
+  </section>
+
+  <!-- PRODUCTS -->
+  <div class="products-section-wrap">
+    <section id="products">
+      <p class="section-label">Ecosystem</p>
+      <h2 class="section-title">Products &amp; Systems</h2>
+      <div class="products-grid" id="products-grid"></div>
+    </section>
+  </div>
+
+  <!-- ABOUT -->
+  <div class="about-wrap">
+    <section id="about">
+      <p class="section-label">About</p>
+      <h2 class="section-title">What is Noven Empire?</h2>
+      <p class="about-body">
+        Noven Empire is an ecosystem — a central place where
+        <strong>products, systems, and experiences</strong> are built and made accessible.
+        It is not a single product. It is the infrastructure behind a growing set of tools
+        designed for people who think ahead, build with intention, and refuse to wait for
+        a world that isn't ready for them yet.
+      </p>
+    </section>
+  </div>
+
+  <!-- FOOTER -->
+  <footer>
+    <span class="footer-brand">Noven Empire</span>
+    <span class="footer-copy">© 2026 — All rights reserved</span>
+  </footer>
+
+  <!-- PANEL -->
+  <div class="panel-overlay" id="panel-overlay"></div>
+  <aside class="slide-panel" id="slide-panel" role="dialog" aria-modal="true">
+    <div class="panel-header-zone">
+      <div class="panel-topbar">
+        <span class="panel-breadcrumb">Noven Empire / Products</span>
+        <button class="panel-close-btn" id="panel-close">Close</button>
+      </div>
+      <p class="panel-coord" id="panel-coord"></p>
+      <h2 class="panel-name" id="panel-name"></h2>
+      <div class="panel-watermark" id="panel-watermark"></div>
+    </div>
+    <div class="panel-body">
+      <div class="panel-rule"></div>
+      <p class="panel-desc" id="panel-desc"></p>
+    </div>
+  </aside>
+
+  <script>
+    const products = [
+      {
+        coord: 'NE·001',
+        name: 'Requiem',
+        shortDesc: 'A structured space for understanding yourself in relation to others.',
+        longDesc: 'Requiem is not a self-help app. It is a structured space for examining yourself — your patterns, your relationships, your becoming. Built around nine interconnected pillars, Requiem is guided by the Conductor: an intelligence that does not prescribe, but detects. It meets you where you are and asks the questions you haven\'t thought to ask yourself yet.'
+      },
+      {
+        coord: 'NE·002',
+        name: 'Morpheus',
+        shortDesc: 'An AI companion built to think with you, not for you.',
+        longDesc: 'Morpheus is an AI companion built on the HUC — a philosophical framework for mapping decisions, identity, and possibility. Where most AI gives answers, Morpheus explores. It sits with the question alongside you, operates in casual and deep modes, and is designed to remain honest about what it is while being genuinely present in the conversation.'
+      },
+      {
+        coord: 'NE·003',
+        name: 'IDLE EMPIRE',
+        shortDesc: 'Tools and systems for builders who refuse to wait for permission.',
+        longDesc: 'IDLE EMPIRE is a suite of creative and productivity tools built for the kind of person who starts with nothing and makes something real. Systems for creation, organization, and execution — designed for people who build before the world is ready for them.'
+      },
+      {
+        coord: 'NE·004',
+        name: 'Shadow Cartographer',
+        shortDesc: 'Football intelligence. Data-driven analysis for those who see the game differently.',
+        longDesc: 'Shadow Cartographer maps football through data. Fixture intelligence, team metrics, and analytical tools for people who approach the game with the same seriousness they bring to everything else. Not for casual fans — for those who want to understand what they\'re actually watching.'
+      }
+    ];
+
+    /* Build cards */
+    const grid = document.getElementById('products-grid');
+    products.forEach(p => {
+      const card = document.createElement('div');
+      card.className = 'product-card';
+      card.setAttribute('role', 'button');
+      card.setAttribute('tabindex', '0');
+      card.setAttribute('aria-label', 'View ' + p.name);
+      card.innerHTML = `
+        <div class="card-top">
+          <span class="card-coord">${p.coord}</span>
+          <span class="card-arrow">↗</span>
+        </div>
+        <h3 class="card-name">${p.name}</h3>
+        <p class="card-desc">${p.shortDesc}</p>
+      `;
+      card.addEventListener('click', () => openPanel(p));
+      card.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') openPanel(p); });
+      grid.appendChild(card);
+    });
+
+    /* Panel */
+    const overlay   = document.getElementById('panel-overlay');
+    const panel     = document.getElementById('slide-panel');
+    const closeBtn  = document.getElementById('panel-close');
+
+    function openPanel(p) {
+      document.getElementById('panel-coord').textContent    = p.coord;
+      document.getElementById('panel-name').textContent     = p.name;
+      document.getElementById('panel-watermark').textContent = p.name;
+      document.getElementById('panel-desc').textContent     = p.longDesc;
+      overlay.classList.add('open');
+      panel.classList.add('open');
+      panel.scrollTop = 0;
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closePanel() {
+      overlay.classList.remove('open');
+      panel.classList.remove('open');
+      document.body.style.overflow = '';
+    }
+
+    closeBtn.addEventListener('click', closePanel);
+    overlay.addEventListener('click', closePanel);
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') closePanel(); });
+
+    /* Hamburger */
+    const burger   = document.getElementById('nav-hamburger');
+    const dropdown = document.getElementById('nav-dropdown');
+
+    burger.addEventListener('click', () => {
+      const isOpen = dropdown.classList.toggle('open');
+      burger.classList.toggle('open', isOpen);
+      burger.setAttribute('aria-expanded', String(isOpen));
+    });
+
+    dropdown.querySelectorAll('a').forEach(a => {
+      a.addEventListener('click', () => {
+        dropdown.classList.remove('open');
+        burger.classList.remove('open');
+        burger.setAttribute('aria-expanded', 'false');
+      });
+    });
+
+    document.addEventListener('click', e => {
+      if (!burger.contains(e.target) && !dropdown.contains(e.target)) {
+        dropdown.classList.remove('open');
+        burger.classList.remove('open');
+        burger.setAttribute('aria-expanded', 'false');
+      }
+    });
+
+    /* Service Worker */
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('./sw.js').catch(() => {});
+    }
+  </script>
+</body>
+</html>
