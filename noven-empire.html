@@ -1,0 +1,1388 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Noven Empire</title>
+  <link rel="manifest" href="manifest.json" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --dark:    #0B0C1A;
+      --accent:  #6366F1;
+      --accent-l:#A5B4FC;
+      --white:   #FFFFFF;
+      --rule:    #E8E8F0;
+      --radius:  3px;
+    }
+
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Inter', sans-serif;
+      font-size: 15px;
+      line-height: 1.6;
+      overflow-x: hidden;
+      background: var(--dark);
+    }
+
+    /* ══════════════════════════════
+       NAV
+    ══════════════════════════════ */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 200;
+      height: 60px;
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      align-items: center;
+      padding: 0 1.5rem;
+      background: rgba(11, 12, 26, 0.94);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+    }
+
+    .nav-logo {
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 700;
+      font-size: 0.8rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: #F0F0FF;
+      text-align: center;
+      user-select: none;
+      grid-column: 2;
+    }
+
+    .nav-right { display: flex; justify-content: flex-end; }
+    .nav-desktop-links { display: none; }
+
+    .nav-hamburger {
+      background: none;
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: var(--radius);
+      padding: 0.48rem 0.52rem;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 4.5px;
+      transition: border-color 0.2s;
+    }
+
+    .nav-hamburger span {
+      display: block;
+      width: 19px;
+      height: 1.5px;
+      background: #8080A8;
+      transition: background 0.2s, transform 0.22s, opacity 0.22s;
+      transform-origin: center;
+    }
+
+    .nav-hamburger:hover { border-color: rgba(255,255,255,0.22); }
+    .nav-hamburger:hover span { background: #F0F0FF; }
+    .nav-hamburger.open span:nth-child(1) { transform: translateY(6px) rotate(45deg); }
+    .nav-hamburger.open span:nth-child(2) { opacity: 0; transform: scaleX(0); }
+    .nav-hamburger.open span:nth-child(3) { transform: translateY(-6px) rotate(-45deg); }
+
+    .nav-dropdown {
+      position: fixed;
+      top: 60px; left: 0; right: 0;
+      background: rgba(8, 8, 18, 0.98);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+      z-index: 199;
+      transform: translateY(-6px);
+      opacity: 0;
+      pointer-events: none;
+      transition: transform 0.2s ease, opacity 0.2s ease;
+    }
+
+    .nav-dropdown.open {
+      transform: translateY(0);
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    .nav-dropdown a {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 1.1rem 2rem;
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 0.82rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: #6060A0;
+      text-decoration: none;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+      transition: color 0.18s, padding-left 0.18s;
+    }
+
+    .nav-dropdown a:last-child { border-bottom: none; }
+    .nav-dropdown a:hover { color: #F0F0FF; padding-left: 2.5rem; }
+
+    .dropdown-num {
+      font-size: 0.58rem;
+      color: var(--accent-l);
+      opacity: 0.45;
+      letter-spacing: 0.1em;
+      min-width: 24px;
+    }
+
+    /* ══════════════════════════════
+       HERO
+    ══════════════════════════════ */
+    #hero {
+      min-height: 100vh;
+      background: var(--dark);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 6rem 2rem 4rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-radial {
+      position: absolute; inset: 0;
+      background: radial-gradient(ellipse 60% 55% at 50% 50%, rgba(99,102,241,0.16) 0%, transparent 65%);
+      pointer-events: none;
+    }
+
+    .hero-grid {
+      position: absolute; inset: 0;
+      background-image:
+        linear-gradient(rgba(165,180,252,0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(165,180,252,0.05) 1px, transparent 1px);
+      background-size: 60px 60px;
+      pointer-events: none;
+      mask-image: radial-gradient(ellipse 90% 90% at 50% 50%, black 10%, transparent 100%);
+      -webkit-mask-image: radial-gradient(ellipse 90% 90% at 50% 50%, black 10%, transparent 100%);
+    }
+
+    .hero-eyebrow {
+      position: relative;
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 0.7rem;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--accent-l);
+      margin-bottom: 1.5rem;
+      opacity: 0.65;
+      animation: fadeUp 0.9s ease both;
+    }
+
+    .hero-title {
+      position: relative;
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 700;
+      font-size: clamp(3.2rem, 11vw, 7rem);
+      letter-spacing: 0.02em;
+      text-transform: uppercase;
+      line-height: 0.92;
+      color: #F4F4FF;
+      margin-bottom: 1.75rem;
+      animation: fadeUp 0.9s 0.1s ease both;
+    }
+
+    .hero-tagline {
+      position: relative;
+      font-family: 'Inter', sans-serif;
+      font-weight: 300;
+      font-size: clamp(0.88rem, 2.5vw, 1rem);
+      color: #6060A0;
+      letter-spacing: 0.04em;
+      max-width: 340px;
+      animation: fadeUp 0.9s 0.2s ease both;
+    }
+
+    /* Scroll cue — no button, just an animated chevron */
+    .scroll-cue {
+      position: absolute;
+      bottom: 2.5rem;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      animation: fadeUp 0.9s 0.5s ease both;
+      cursor: pointer;
+      text-decoration: none;
+    }
+
+    .scroll-cue svg {
+      color: rgba(165,180,252,0.3);
+      animation: bounce 1.8s ease-in-out infinite;
+    }
+
+    @keyframes bounce {
+      0%, 100% { transform: translateX(-50%) translateY(0); opacity: 0.3; }
+      50%       { transform: translateX(-50%) translateY(6px); opacity: 0.65; }
+    }
+
+    /* ══════════════════════════════
+       PRODUCTS — white bg
+    ══════════════════════════════ */
+    .products-section-wrap { background: var(--white); }
+
+    #products {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 5rem 1.75rem;
+    }
+
+    .section-label {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 0.78rem;
+      font-weight: 600;
+      letter-spacing: 0.24em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 0.5rem;
+    }
+
+    .section-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 700;
+      font-size: clamp(1.7rem, 5vw, 2.4rem);
+      color: #0A0B18;
+      margin-bottom: 3rem;
+      letter-spacing: -0.02em;
+      line-height: 1.1;
+    }
+
+    /* Grid: 3px white gaps between dark cards */
+    .products-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 3px;
+      background: #DDDDE8;
+    }
+
+    /* ── CARDS ── */
+    .product-card {
+      background: linear-gradient(160deg, #0F0F24 0%, #07070E 100%);
+      border-top: 1.5px solid rgba(165,180,252,0.28);
+      padding: 1.75rem 1.6rem 1.75rem;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      transition: background 0.25s, border-color 0.25s;
+    }
+
+    /* Left border grows on hover */
+    .product-card::before {
+      content: '';
+      position: absolute;
+      left: 0; top: 0; bottom: 0;
+      width: 2px;
+      background: linear-gradient(to top, transparent, var(--accent-l), transparent);
+      transform: scaleY(0);
+      transform-origin: center;
+      transition: transform 0.38s cubic-bezier(0.4,0,0.2,1);
+    }
+
+    .product-card:hover {
+      background: linear-gradient(160deg, #17172E 0%, #0B0B18 100%);
+      border-top-color: rgba(165,180,252,0.7);
+    }
+
+    .product-card:hover::before { transform: scaleY(1); }
+
+    /* Card top row */
+    .card-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1.1rem;
+    }
+
+    .card-coord {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 0.6rem;
+      letter-spacing: 0.2em;
+      color: #454570;
+      font-weight: 500;
+    }
+
+    .card-arrow {
+      font-size: 1.1rem;
+      color: #383870;
+      line-height: 1;
+      transition: color 0.2s, transform 0.2s;
+    }
+
+    .product-card:hover .card-arrow {
+      color: var(--accent-l);
+      transform: translate(2px, -2px);
+    }
+
+    .card-name {
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 700;
+      font-size: 1.45rem;
+      color: #FFFFFF;
+      letter-spacing: 0.01em;
+      line-height: 1.15;
+      margin-bottom: 0.7rem;
+      flex: 1;
+    }
+
+    .card-desc {
+      font-size: 0.82rem;
+      color: #8484B8;
+      line-height: 1.7;
+      margin-bottom: 0;
+    }
+
+    /* ══════════════════════════════
+       ABOUT — white
+    ══════════════════════════════ */
+    .about-wrap {
+      background: var(--white);
+      border-top: 1px solid var(--rule);
+    }
+
+    #about {
+      padding: 5rem 1.75rem;
+      max-width: 640px;
+      margin: 0 auto;
+    }
+
+    .about-body {
+      font-weight: 300;
+      font-size: 1rem;
+      color: #52527A;
+      line-height: 1.95;
+      margin-top: 1.5rem;
+    }
+
+    .about-body strong { color: #0A0B18; font-weight: 600; }
+
+    /* ══════════════════════════════
+       FOOTER
+    ══════════════════════════════ */
+    footer {
+      background: var(--dark);
+      padding: 2.5rem 1.75rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-top: 1px solid rgba(255,255,255,0.04);
+    }
+
+    .footer-brand {
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 700;
+      font-size: 0.7rem;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: #20203A;
+    }
+
+    .footer-copy { font-size: 0.7rem; color: #20203A; letter-spacing: 0.04em; }
+
+    /* ══════════════════════════════
+       SLIDE PANEL — redesigned
+    ══════════════════════════════ */
+    .panel-overlay {
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.72);
+      z-index: 300;
+      opacity: 0; visibility: hidden;
+      transition: opacity 0.3s, visibility 0.3s;
+      cursor: pointer;
+    }
+
+    .panel-overlay.open { opacity: 1; visibility: visible; }
+
+    .slide-panel {
+      position: fixed;
+      top: 0; right: 0; bottom: 0;
+      width: min(500px, 100vw);
+      background: #07070E;
+      border-left: 1px solid rgba(255,255,255,0.05);
+      z-index: 301;
+      transform: translateX(100%);
+      transition: transform 0.38s cubic-bezier(0.4,0,0.2,1);
+      overflow-y: auto;
+      overflow-x: hidden;
+      display: flex;
+      flex-direction: column;
+      cursor: default;
+    }
+
+    .slide-panel.open { transform: translateX(0); }
+
+    /* Panel header zone — distinct indigo-dark band */
+    .panel-header-zone {
+      position: relative;
+      background: linear-gradient(145deg, #0E0D2E 0%, #0A0920 50%, #090912 100%);
+      padding: 1.75rem 2rem 2.25rem;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+
+    /* Grid inside header zone */
+    .panel-header-zone::before {
+      content: '';
+      position: absolute; inset: 0;
+      background-image:
+        linear-gradient(rgba(165,180,252,0.06) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(165,180,252,0.06) 1px, transparent 1px);
+      background-size: 36px 36px;
+      pointer-events: none;
+    }
+
+    /* Radial glow in header */
+    .panel-header-zone::after {
+      content: '';
+      position: absolute;
+      bottom: -30px; right: -30px;
+      width: 220px; height: 220px;
+      background: radial-gradient(circle, rgba(99,102,241,0.18) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .panel-topbar {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 2.5rem;
+      z-index: 1;
+    }
+
+    .panel-breadcrumb {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 0.6rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: rgba(165,180,252,0.3);
+    }
+
+    .panel-close-btn {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: var(--radius);
+      color: rgba(165,180,252,0.5);
+      padding: 0.38rem 0.85rem;
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 0.6rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: background 0.2s, border-color 0.2s, color 0.2s;
+    }
+
+    .panel-close-btn:hover {
+      background: rgba(255,255,255,0.1);
+      border-color: rgba(255,255,255,0.2);
+      color: #F0F0FF;
+    }
+
+    .panel-coord {
+      position: relative;
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 0.65rem;
+      letter-spacing: 0.25em;
+      color: rgba(165,180,252,0.5);
+      margin-bottom: 0.6rem;
+      z-index: 1;
+    }
+
+    .panel-name {
+      position: relative;
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 700;
+      font-size: clamp(2.2rem, 8vw, 3.2rem);
+      color: #F4F4FF;
+      letter-spacing: 0.01em;
+      line-height: 1;
+      z-index: 1;
+    }
+
+    /* Faded name watermark in the bg of header zone */
+    .panel-watermark {
+      position: absolute;
+      bottom: -0.5rem;
+      right: -0.25rem;
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 700;
+      font-size: 5rem;
+      color: var(--accent-l);
+      opacity: 0.06;
+      pointer-events: none;
+      user-select: none;
+      letter-spacing: 0.08em;
+      line-height: 1;
+      white-space: nowrap;
+    }
+
+    /* Panel body */
+    .panel-body {
+      padding: 2rem 2rem 3rem;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .panel-rule {
+      width: 100%;
+      height: 1px;
+      background: rgba(255,255,255,0.06);
+      margin-bottom: 1.75rem;
+    }
+
+    .panel-desc {
+      font-size: 0.94rem;
+      font-weight: 300;
+      color: #7070A8;
+      line-height: 1.95;
+    }
+
+    /* ══════════════════════════════
+       ANIMATIONS
+    ══════════════════════════════ */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(12px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ══════════════════════════════
+       RESPONSIVE
+    ══════════════════════════════ */
+    @media (max-width: 560px) {
+      #products { padding: 4rem 1.25rem; }
+      #about    { padding: 4rem 1.25rem; }
+      footer    { padding: 2rem 1.25rem; flex-direction: column; gap: 0.35rem; text-align: center; }
+      .products-grid { grid-template-columns: 1fr; }
+      .panel-header-zone { padding: 1.5rem 1.25rem 2rem; }
+      .panel-body { padding: 1.75rem 1.25rem 2.5rem; }
+      .panel-name { font-size: 2.2rem; }
+    }
+
+    /* ══════════════════════════════
+       DESKTOP
+    ══════════════════════════════ */
+    @media (min-width: 900px) {
+      /* Nav — show links directly, hide hamburger */
+      nav {
+        grid-template-columns: auto 1fr auto;
+        padding: 0 3.5rem;
+        gap: 2rem;
+      }
+      .nav-logo { text-align: left; grid-column: 1; }
+      .nav-right { display: none; }
+      .nav-dropdown { display: none; }
+      .nav-desktop-links {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        gap: 2.5rem;
+        list-style: none;
+      }
+      .nav-desktop-links a {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        font-size: 0.72rem;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: #6060A0;
+        text-decoration: none;
+        transition: color 0.2s;
+      }
+      .nav-desktop-links a:hover { color: #F0F0FF; }
+      .nav-desktop-num {
+        font-size: 0.58rem;
+        color: #818CF8;
+        opacity: 0.5;
+        letter-spacing: 0.08em;
+      }
+
+      /* Hero — bigger, more space */
+      #hero { padding: 8rem 4rem 6rem; min-height: 100vh; }
+      .hero-title { font-size: 8rem; }
+
+      /* Products — 2 col already, just more room */
+      #products { padding: 7rem 4rem; max-width: 1100px; }
+      .products-grid { grid-template-columns: repeat(2, 1fr); }
+      .product-card { padding: 2.5rem 2.25rem; }
+      .card-name { font-size: 1.65rem; }
+
+      /* About */
+      #about { padding: 7rem 4rem; max-width: 720px; }
+      .about-body { font-size: 1.05rem; }
+
+      /* Footer */
+      footer { padding: 3rem 4rem; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation: none !important; transition: none !important; }
+    }
+    .profile-panel-shell.open { transform: translateX(0) !important; }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav>
+    <span class="nav-logo">Noven Empire</span>
+    <ul class="nav-desktop-links">
+      <li><a href="#products"><span class="nav-desktop-num">01 ·</span> Products</a></li>
+      <li><a href="#about"><span class="nav-desktop-num">02 ·</span> About</a></li>
+    </ul>
+    <div class="nav-right">
+      <button class="nav-hamburger" id="nav-hamburger" aria-label="Menu" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- DROPDOWN -->
+  <div class="nav-dropdown" id="nav-dropdown">
+    <a href="#products" class="dropdown-link" id="dd-products">
+      <span class="dropdown-num">01 ·</span>Products
+    </a>
+    <a href="#about" class="dropdown-link" id="dd-about">
+      <span class="dropdown-num">02 ·</span>About
+    </a>
+    <a href="#" class="dropdown-link" id="dd-profile">
+      <span class="dropdown-num">03 ·</span>Profile
+    </a>
+    <a href="#" class="dropdown-link" id="dd-status">
+      <span class="dropdown-num">04 ·</span>System Status
+    </a>
+    <a href="#" class="dropdown-link" id="dd-changelog">
+      <span class="dropdown-num">05 ·</span>Changelog
+    </a>
+    <a href="#" class="dropdown-link" id="dd-contact">
+      <span class="dropdown-num">06 ·</span>Contact
+    </a>
+    <a href="#" class="dropdown-link" id="dd-login">
+      <span class="dropdown-num">07 ·</span>Login
+    </a>
+  </div>
+
+  <!-- HERO -->
+  <section id="hero">
+    <div class="hero-radial"></div>
+    <div class="hero-grid"></div>
+    <p class="hero-eyebrow">Noven Empire</p>
+    <h1 class="hero-title">The Empire<br>You Build</h1>
+    <p class="hero-tagline">Where ambition becomes architecture.</p>
+    <a href="#products" class="scroll-cue" aria-label="Scroll to products">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+        <path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </a>
+  </section>
+
+  <!-- PRODUCTS -->
+  <div class="products-section-wrap">
+    <section id="products">
+      <p class="section-label">Ecosystem</p>
+      <h2 class="section-title">Products &amp; Systems</h2>
+      <div class="products-grid" id="products-grid"></div>
+      <div style="margin-top:3px;background:var(--page-rule,#DDDDE8)" id="see-all-row">
+        <button id="see-all-btn" style="
+          width:100%;background:transparent;border:none;
+          font-family:'Space Grotesk',sans-serif;font-size:0.65rem;font-weight:600;
+          letter-spacing:0.18em;text-transform:uppercase;color:var(--text-2,#5A5A78);
+          padding:0.9rem;cursor:pointer;display:flex;align-items:center;
+          justify-content:center;gap:0.5rem;transition:color 0.2s"
+          data-expanded="false">
+          <span id="see-all-label">See All Products</span>
+          <svg id="see-all-icon" width="12" height="12" viewBox="0 0 16 16" fill="none">
+            <path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+      </div>
+    </section>
+  </div>
+
+  <!-- ABOUT -->
+  <div class="about-wrap">
+    <section id="about">
+      <p class="section-label">About</p>
+      <h2 class="section-title">What is Noven Empire?</h2>
+      <p class="about-body">
+        Noven Empire is an ecosystem for building ambitious systems. It serves as the home
+        for <strong>projects, tools, and experiences</strong> designed to transform ideas
+        into structured realities. From artificial intelligence and human connection to
+        analytical frameworks and personal development, each system is built with a common
+        belief: meaningful outcomes emerge from deliberate architecture.
+        <br/><br/>
+        This is not a single product. It is the foundation beneath many.
+      </p>
+    </section>
+  </div>
+
+  <!-- FOOTER -->
+  <footer>
+    <span class="footer-brand">Noven Empire</span>
+    <div style="display:flex;align-items:center;gap:1rem">
+      <a href="#" id="dd-privacy" style="font-size:0.62rem;color:#252540;letter-spacing:0.06em;text-decoration:none;font-family:'Space Grotesk',sans-serif">Privacy</a>
+      <a href="#" id="dd-terms" style="font-size:0.62rem;color:#252540;letter-spacing:0.06em;text-decoration:none;font-family:'Space Grotesk',sans-serif">Terms</a>
+      <span class="footer-copy">© 2026</span>
+    </div>
+  </footer>
+
+  <!-- PANEL -->
+  <div class="panel-overlay" id="panel-overlay"></div>
+  <aside class="slide-panel" id="slide-panel" role="dialog" aria-modal="true">
+    <div class="panel-header-zone">
+      <div class="panel-topbar">
+        <span class="panel-breadcrumb">Noven Empire / Products</span>
+        <button class="panel-close-btn" id="panel-close">Close</button>
+      </div>
+      <p class="panel-coord" id="panel-coord"></p>
+      <h2 class="panel-name" id="panel-name"></h2>
+      <div class="panel-watermark" id="panel-watermark"></div>
+    </div>
+    <div class="panel-body">
+      <div class="panel-rule"></div>
+      <p class="panel-desc" id="panel-desc"></p>
+      <div class="panel-footer-note" id="panel-footer-note" style="margin-top:2.5rem;padding-top:1.5rem;border-top:1px solid #1A1A30"></div>
+    </div>
+  </aside>
+
+  <!-- PROFILE PANEL OVERLAY -->
+  <div class="panel-overlay" id="profile-overlay"></div>
+
+  <!-- PROFILE PANEL — light mode dashboard -->
+  <aside class="profile-panel-shell" id="profile-panel" role="dialog" aria-modal="true" style="
+    position:fixed;top:0;right:0;bottom:0;
+    width:min(480px,100vw);
+    background:#F5F6FA;
+    border-left:1px solid #E0E0EC;
+    z-index:401;
+    transform:translateX(100%);
+    transition:transform 0.38s cubic-bezier(0.4,0,0.2,1);
+    overflow-y:auto;
+    display:flex;flex-direction:column;
+    cursor:default;
+  ">
+    <!-- Header bar -->
+    <div style="
+      display:flex;align-items:center;justify-content:space-between;
+      padding:0 1.25rem;height:52px;flex-shrink:0;
+      background:#FFFFFF;border-bottom:1px solid #E8E8F0;
+    ">
+      <span style="font-family:'Space Grotesk',sans-serif;font-size:0.68rem;
+        font-weight:600;letter-spacing:0.18em;text-transform:uppercase;color:#9090B0">
+        Profile
+      </span>
+      <button id="profile-close" style="
+        background:none;border:1px solid #E0E0EC;border-radius:3px;
+        color:#7070A0;padding:5px 12px;cursor:pointer;
+        font-family:'Space Grotesk',sans-serif;font-size:0.6rem;font-weight:600;
+        letter-spacing:0.1em;text-transform:uppercase;transition:all 0.18s;
+      ">Close</button>
+    </div>
+
+    <!-- Identity card -->
+    <div style="background:#FFFFFF;margin:1rem;border-radius:8px;
+      border:1px solid #E8E8F0;padding:1.25rem;
+      display:flex;align-items:center;gap:1rem;">
+      <div style="width:48px;height:48px;border-radius:50%;
+        background:linear-gradient(135deg,#4F46E5,#818CF8);
+        display:flex;align-items:center;justify-content:center;
+        flex-shrink:0;font-family:'Space Grotesk',sans-serif;
+        font-weight:700;font-size:0.9rem;color:#FFFFFF;">NE</div>
+      <div>
+        <div style="font-family:'Space Grotesk',sans-serif;font-weight:700;
+          font-size:1rem;color:#0D0E1A;margin-bottom:3px;">Imperial Architect</div>
+        <div style="font-family:'Space Grotesk',sans-serif;font-size:0.6rem;
+          font-weight:600;letter-spacing:0.18em;text-transform:uppercase;
+          color:#9090B0;">Founder · Noven Empire</div>
+      </div>
+    </div>
+
+    <!-- Active Systems -->
+    <div style="margin:0 1rem 1rem;">
+      <p style="font-family:'Space Grotesk',sans-serif;font-size:0.62rem;font-weight:600;
+        letter-spacing:0.2em;text-transform:uppercase;color:#9090B0;
+        margin-bottom:0.6rem;padding-left:2px;">Active Systems</p>
+      <div id="profile-systems"></div>
+    </div>
+
+    <!-- Recent Activity -->
+    <div style="margin:0 1rem 1rem;background:#FFFFFF;border-radius:8px;
+      border:1px solid #E8E8F0;padding:1.1rem;">
+      <p style="font-family:'Space Grotesk',sans-serif;font-size:0.62rem;font-weight:600;
+        letter-spacing:0.2em;text-transform:uppercase;color:#9090B0;
+        margin-bottom:0.65rem;">Recent Activity</p>
+      <p style="font-size:0.8rem;color:#A0A0C0;line-height:1.6;">
+        Activity tracking becomes available once authentication is integrated.
+      </p>
+    </div>
+
+    <!-- Footer note -->
+    <div style="margin:auto 1rem 1.5rem;padding-top:1rem;">
+      <p style="font-family:'Space Grotesk',sans-serif;font-size:0.6rem;
+        font-weight:600;letter-spacing:0.14em;text-transform:uppercase;
+        color:#C0C0D8;text-align:center;">
+        Profile Framework — Authentication Pending
+      </p>
+    </div>
+  </aside>
+
+  <!-- CHANGELOG PANEL OVERLAY -->
+  <div class="panel-overlay" id="changelog-overlay"></div>
+
+  <!-- CHANGELOG PANEL — light mode dashboard -->
+  <aside class="profile-panel-shell" id="changelog-panel" role="dialog" aria-modal="true" style="
+    position:fixed;top:0;right:0;bottom:0;
+    width:min(480px,100vw);
+    background:#F5F6FA;
+    border-left:1px solid #E0E0EC;
+    z-index:401;
+    transform:translateX(100%);
+    transition:transform 0.38s cubic-bezier(0.4,0,0.2,1);
+    overflow-y:auto;
+    display:flex;flex-direction:column;
+    cursor:default;
+  ">
+    <!-- Header bar -->
+    <div style="
+      display:flex;align-items:center;justify-content:space-between;
+      padding:0 1.25rem;height:52px;flex-shrink:0;
+      background:#FFFFFF;border-bottom:1px solid #E8E8F0;
+    ">
+      <span style="font-family:'Space Grotesk',sans-serif;font-size:0.68rem;
+        font-weight:600;letter-spacing:0.18em;text-transform:uppercase;color:#9090B0">
+        Changelog
+      </span>
+      <button id="changelog-close" style="
+        background:none;border:1px solid #E0E0EC;border-radius:3px;
+        color:#7070A0;padding:5px 12px;cursor:pointer;
+        font-family:'Space Grotesk',sans-serif;font-size:0.6rem;font-weight:600;
+        letter-spacing:0.1em;text-transform:uppercase;transition:all 0.18s;
+      ">Close</button>
+    </div>
+
+    <!-- Title block -->
+    <div style="padding:1.5rem 1.25rem 0.5rem">
+      <p style="font-family:'Space Grotesk',sans-serif;font-size:0.6rem;font-weight:600;
+        letter-spacing:0.2em;text-transform:uppercase;color:#818CF8;margin-bottom:0.4rem">
+        NE·004
+      </p>
+      <h2 style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:1.4rem;
+        color:#0D0E1A;letter-spacing:-0.01em">Version History</h2>
+    </div>
+
+    <!-- Entries -->
+    <div id="changelog-list" style="padding:1.25rem;"></div>
+  </aside>
+
+  <!-- SYSTEM STATUS PANEL -->
+  <div class="panel-overlay" id="status-overlay"></div>
+  <aside class="profile-panel-shell" id="status-panel" role="dialog" aria-modal="true" style="
+    position:fixed;top:0;right:0;bottom:0;width:min(480px,100vw);
+    background:#F5F6FA;border-left:1px solid #E0E0EC;z-index:401;
+    transform:translateX(100%);transition:transform 0.38s cubic-bezier(0.4,0,0.2,1);
+    overflow-y:auto;display:flex;flex-direction:column;cursor:default;">
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:0 1.25rem;height:52px;flex-shrink:0;background:#FFFFFF;border-bottom:1px solid #E8E8F0;">
+      <span style="font-family:'Space Grotesk',sans-serif;font-size:0.68rem;font-weight:600;letter-spacing:0.18em;text-transform:uppercase;color:#9090B0">System Status</span>
+      <button id="status-close" style="background:none;border:1px solid #E0E0EC;border-radius:3px;color:#7070A0;padding:5px 12px;cursor:pointer;font-family:'Space Grotesk',sans-serif;font-size:0.6rem;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;">Close</button>
+    </div>
+    <div style="padding:1.25rem" id="status-list"></div>
+  </aside>
+
+  <!-- CONTACT PANEL -->
+  <div class="panel-overlay" id="contact-overlay"></div>
+  <aside class="profile-panel-shell" id="contact-panel" role="dialog" aria-modal="true" style="
+    position:fixed;top:0;right:0;bottom:0;width:min(480px,100vw);
+    background:#F5F6FA;border-left:1px solid #E0E0EC;z-index:401;
+    transform:translateX(100%);transition:transform 0.38s cubic-bezier(0.4,0,0.2,1);
+    overflow-y:auto;display:flex;flex-direction:column;cursor:default;">
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:0 1.25rem;height:52px;flex-shrink:0;background:#FFFFFF;border-bottom:1px solid #E8E8F0;">
+      <span style="font-family:'Space Grotesk',sans-serif;font-size:0.68rem;font-weight:600;letter-spacing:0.18em;text-transform:uppercase;color:#9090B0">Contact</span>
+      <button id="contact-close" style="background:none;border:1px solid #E0E0EC;border-radius:3px;color:#7070A0;padding:5px 12px;cursor:pointer;font-family:'Space Grotesk',sans-serif;font-size:0.6rem;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;">Close</button>
+    </div>
+    <div style="padding:1.5rem 1.25rem">
+      <div style="background:#FFFFFF;border:1px solid #E8E8F0;border-radius:8px;padding:1.5rem;text-align:center;">
+        <p style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:1rem;color:#0D0E1A;margin-bottom:0.5rem">No public contact yet</p>
+        <p style="font-size:0.82rem;color:#A0A0C0;line-height:1.6">Noven Empire is currently in private development. Contact channels will open once the Empire is ready for the public.</p>
+      </div>
+    </div>
+  </aside>
+
+  <!-- LOGIN / REGISTER PANEL -->
+  <div class="panel-overlay" id="login-overlay"></div>
+  <aside class="profile-panel-shell" id="login-panel" role="dialog" aria-modal="true" style="
+    position:fixed;top:0;right:0;bottom:0;width:min(480px,100vw);
+    background:#F5F6FA;border-left:1px solid #E0E0EC;z-index:401;
+    transform:translateX(100%);transition:transform 0.38s cubic-bezier(0.4,0,0.2,1);
+    overflow-y:auto;display:flex;flex-direction:column;cursor:default;">
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:0 1.25rem;height:52px;flex-shrink:0;background:#FFFFFF;border-bottom:1px solid #E8E8F0;">
+      <span id="login-title-tag" style="font-family:'Space Grotesk',sans-serif;font-size:0.68rem;font-weight:600;letter-spacing:0.18em;text-transform:uppercase;color:#9090B0">Login</span>
+      <button id="login-close" style="background:none;border:1px solid #E0E0EC;border-radius:3px;color:#7070A0;padding:5px 12px;cursor:pointer;font-family:'Space Grotesk',sans-serif;font-size:0.6rem;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;">Close</button>
+    </div>
+    <div style="padding:1.5rem 1.25rem">
+      <div style="background:#FFFFFF;border:1px solid #E8E8F0;border-radius:8px;padding:1.5rem;margin-bottom:1rem">
+        <p style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:1.05rem;color:#0D0E1A;margin-bottom:1.25rem" id="login-panel-heading">Sign In</p>
+
+        <label style="font-family:'Space Grotesk',sans-serif;font-size:0.6rem;font-weight:600;letter-spacing:0.14em;text-transform:uppercase;color:#9090B0;display:block;margin-bottom:0.4rem">Email</label>
+        <input type="email" disabled placeholder="you@example.com" style="width:100%;background:#F5F6FA;border:1px solid #E0E0EC;border-radius:4px;padding:0.65rem 0.75rem;font-size:0.85rem;color:#A0A0C0;margin-bottom:1rem;font-family:'Inter',sans-serif" />
+
+        <label style="font-family:'Space Grotesk',sans-serif;font-size:0.6rem;font-weight:600;letter-spacing:0.14em;text-transform:uppercase;color:#9090B0;display:block;margin-bottom:0.4rem">Password</label>
+        <input type="password" disabled placeholder="••••••••" style="width:100%;background:#F5F6FA;border:1px solid #E0E0EC;border-radius:4px;padding:0.65rem 0.75rem;font-size:0.85rem;color:#A0A0C0;margin-bottom:1.5rem;font-family:'Inter',sans-serif" />
+
+        <button disabled style="width:100%;background:#E0E0EC;border:none;border-radius:4px;padding:0.75rem;font-family:'Space Grotesk',sans-serif;font-size:0.72rem;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:#A0A0C0;cursor:not-allowed" id="login-panel-btn">Sign In</button>
+      </div>
+
+      <p style="text-align:center;font-size:0.8rem;color:#7070A0">
+        <span id="login-toggle-prompt">Don't have an account?</span>
+        <a href="#" id="login-toggle-link" style="color:#4F46E5;font-weight:600;text-decoration:none">Register</a>
+      </p>
+
+      <div style="margin-top:2rem;background:#FFFFFF;border:1px solid #E8E8F0;border-radius:8px;padding:1rem;text-align:center">
+        <p style="font-family:'Space Grotesk',sans-serif;font-size:0.6rem;font-weight:600;letter-spacing:0.14em;text-transform:uppercase;color:#C0C0D8">Authentication Framework — Not Yet Active</p>
+      </div>
+    </div>
+  </aside>
+
+  <!-- PRIVACY POLICY PANEL -->
+  <div class="panel-overlay" id="privacy-overlay"></div>
+  <aside class="profile-panel-shell" id="privacy-panel" role="dialog" aria-modal="true" style="
+    position:fixed;top:0;right:0;bottom:0;width:min(480px,100vw);
+    background:#F5F6FA;border-left:1px solid #E0E0EC;z-index:401;
+    transform:translateX(100%);transition:transform 0.38s cubic-bezier(0.4,0,0.2,1);
+    overflow-y:auto;display:flex;flex-direction:column;cursor:default;">
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:0 1.25rem;height:52px;flex-shrink:0;background:#FFFFFF;border-bottom:1px solid #E8E8F0;">
+      <span style="font-family:'Space Grotesk',sans-serif;font-size:0.68rem;font-weight:600;letter-spacing:0.18em;text-transform:uppercase;color:#9090B0">Privacy Policy</span>
+      <button id="privacy-close" style="background:none;border:1px solid #E0E0EC;border-radius:3px;color:#7070A0;padding:5px 12px;cursor:pointer;font-family:'Space Grotesk',sans-serif;font-size:0.6rem;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;">Close</button>
+    </div>
+    <div style="padding:1.5rem 1.25rem">
+      <div style="background:#FFFFFF;border:1px solid #E8E8F0;border-radius:8px;padding:1.5rem;text-align:center;">
+        <p style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:1rem;color:#0D0E1A;margin-bottom:0.5rem">Not yet published</p>
+        <p style="font-size:0.82rem;color:#A0A0C0;line-height:1.6">A formal privacy policy will be published before Noven Empire opens to the public and begins handling user data.</p>
+      </div>
+    </div>
+  </aside>
+
+  <!-- TERMS OF SERVICE PANEL -->
+  <div class="panel-overlay" id="terms-overlay"></div>
+  <aside class="profile-panel-shell" id="terms-panel" role="dialog" aria-modal="true" style="
+    position:fixed;top:0;right:0;bottom:0;width:min(480px,100vw);
+    background:#F5F6FA;border-left:1px solid #E0E0EC;z-index:401;
+    transform:translateX(100%);transition:transform 0.38s cubic-bezier(0.4,0,0.2,1);
+    overflow-y:auto;display:flex;flex-direction:column;cursor:default;">
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:0 1.25rem;height:52px;flex-shrink:0;background:#FFFFFF;border-bottom:1px solid #E8E8F0;">
+      <span style="font-family:'Space Grotesk',sans-serif;font-size:0.68rem;font-weight:600;letter-spacing:0.18em;text-transform:uppercase;color:#9090B0">Terms of Service</span>
+      <button id="terms-close" style="background:none;border:1px solid #E0E0EC;border-radius:3px;color:#7070A0;padding:5px 12px;cursor:pointer;font-family:'Space Grotesk',sans-serif;font-size:0.6rem;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;">Close</button>
+    </div>
+    <div style="padding:1.5rem 1.25rem">
+      <div style="background:#FFFFFF;border:1px solid #E8E8F0;border-radius:8px;padding:1.5rem;text-align:center;">
+        <p style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:1rem;color:#0D0E1A;margin-bottom:0.5rem">Not yet published</p>
+        <p style="font-size:0.82rem;color:#A0A0C0;line-height:1.6">Terms of service will be published alongside the privacy policy before public launch.</p>
+      </div>
+    </div>
+  </aside>
+
+    <script>
+  document.addEventListener('DOMContentLoaded', function() {
+    /* ── PRODUCTS DATA ── */
+    const allProducts = [
+      {
+        coord: 'NE·001', name: 'Requiem',
+        shortDesc: 'An evolving school for the art of connection.',
+        longDesc: 'Requiem is a guided system for exploring connection, identity, and the patterns that shape human relationships. Built around nine interconnected pillars, it is guided by the Conductor — an intelligence that does not prescribe, but detects. It meets you where you are and asks the questions you have not yet thought to ask yourself.',
+        live: false, visible: true
+      },
+      {
+        coord: 'NE·002', name: 'Morpheus',
+        shortDesc: 'An AI companion built to think with you, not for you.',
+        longDesc: 'Morpheus is an AI companion built on the HUC — a philosophical framework for mapping decisions, identity, and possibility. Where most AI gives answers, Morpheus explores. It sits with the question alongside you and is designed to remain honest about what it is while being genuinely present in the conversation.',
+        live: false, visible: true
+      },
+      {
+        coord: 'NE·003', name: 'IDLE EMPIRE',
+        shortDesc: 'Tools and systems for builders who refuse to wait for permission.',
+        longDesc: 'IDLE EMPIRE is a suite of creative and productivity tools built for the kind of person who starts with nothing and makes something real. Systems for creation, organization, and execution — designed for people who build before the world is ready for them.',
+        live: false, visible: true
+      },
+      {
+        coord: 'NE·004', name: 'Shadow System',
+        shortDesc: 'Football intelligence focused on environments, not outcomes.',
+        longDesc: 'Shadow System is a football environment classification system designed to map chaos, identify match archetypes, and align markets with evidence. Built around two engines — Cartographer for classification and Gold for survival scoring — Shadow System does not predict outcomes. It understands terrain.',
+        live: true, url: 'https://princemcuwuigiaren-hub.github.io/shadow-system/shadow-system.html',
+        visible: true
+      },
+      {
+        coord: 'NE·005', name: 'Ascension',
+        shortDesc: 'A system for deliberate self-development across every domain that matters.',
+        longDesc: 'Ascension is a personal development system built around the belief that growth is not accidental — it is engineered. Tracking progress across multiple domains of life, Ascension is the product most directly concerned with the person behind all the others in the Empire.',
+        live: false, visible: false
+      },
+      {
+        coord: 'NE·006', name: 'Vulcan',
+        shortDesc: 'A simulation and validation framework for testing ideas before they meet reality.',
+        longDesc: 'Vulcan is a system for simulation, testing, and validation. Before an idea reaches the world, Vulcan subjects it to structured pressure. The output is not prediction — it is confidence.',
+        live: false, visible: false
+      }
+    ];
+
+    /* ── BUILD CARDS ── */
+    const grid = document.getElementById('products-grid');
+    let expanded = false;
+
+    function buildCards() {
+      grid.innerHTML = '';
+      const toShow = expanded ? allProducts : allProducts.filter(p => p.visible);
+      toShow.forEach(p => {
+        const card = document.createElement('div');
+        card.className = 'product-card';
+        card.setAttribute('role', 'button');
+        card.setAttribute('tabindex', '0');
+        card.setAttribute('aria-label', 'View ' + p.name);
+        card.innerHTML = `
+          <div class="card-top">
+            <span class="card-coord">${p.coord}</span>
+            <span class="card-arrow" style="${p.live ? 'color:#10B981' : ''}">↗</span>
+          </div>
+          <h3 class="card-name">${p.name}</h3>
+          <p class="card-desc">${p.shortDesc}</p>
+          ${p.live ? `<span style="display:inline-flex;align-items:center;gap:5px;font-family:'Space Grotesk',sans-serif;font-size:0.6rem;font-weight:600;letter-spacing:0.16em;text-transform:uppercase;color:#10B981"><span style="width:5px;height:5px;border-radius:50%;background:#10B981;box-shadow:0 0 6px #10B981;animation:pulse-live 2s ease-in-out infinite"></span>Live</span>` : ''}
+        `;
+        card.addEventListener('click', () => openPanel(p));
+        card.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') openPanel(p); });
+        grid.appendChild(card);
+      });
+    }
+
+    buildCards();
+
+    /* See All toggle */
+    document.getElementById('see-all-btn').addEventListener('click', () => {
+      expanded = !expanded;
+      document.getElementById('see-all-label').textContent = expanded ? 'Show Less' : 'See All Products';
+      document.getElementById('see-all-icon').style.transform = expanded ? 'rotate(180deg)' : '';
+      buildCards();
+    });
+
+    /* ── PRODUCT PANEL ── */
+    const overlay  = document.getElementById('panel-overlay');
+    const panel    = document.getElementById('slide-panel');
+    const closeBtn = document.getElementById('panel-close');
+
+    function openPanel(p) {
+      document.getElementById('panel-coord').textContent     = p.coord;
+      document.getElementById('panel-name').textContent      = p.name;
+      document.getElementById('panel-watermark').textContent = p.name;
+      document.getElementById('panel-desc').textContent      = p.longDesc;
+
+      const footer = document.getElementById('panel-footer-note');
+      if (p.live && p.url) {
+        footer.innerHTML = `<a href="${p.url}" target="_blank" rel="noopener" style="
+          display:inline-flex;align-items:center;gap:0.5rem;
+          background:rgba(16,185,129,0.12);border:1px solid rgba(16,185,129,0.35);
+          border-radius:3px;padding:0.65rem 1.25rem;
+          font-family:'Space Grotesk',sans-serif;font-size:0.7rem;font-weight:600;
+          letter-spacing:0.12em;text-transform:uppercase;color:#10B981;text-decoration:none">
+          <svg width="12" height="12" viewBox="0 0 16 16" fill="none">
+            <path d="M4 12L12 4M12 4H6M12 4v6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          Launch ${p.name}
+        </a>`;
+      } else {
+        footer.textContent = 'This product is currently in private development.';
+      }
+
+      overlay.classList.add('open');
+      panel.classList.add('open');
+      panel.scrollTop = 0;
+      document.body.style.overflow = 'hidden';
+      history.pushState({ panel: 'product' }, '');
+    }
+
+    function closePanel() {
+      overlay.classList.remove('open');
+      panel.classList.remove('open');
+      document.body.style.overflow = '';
+    }
+
+    closeBtn.addEventListener('click', () => { if (history.state?.panel) history.back(); else closePanel(); });
+    overlay.addEventListener('click', () => { if (history.state?.panel) history.back(); else closePanel(); });
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') closePanel(); });
+
+    /* ── HAMBURGER ── */
+    const burger   = document.getElementById('nav-hamburger');
+    const dropdown = document.getElementById('nav-dropdown');
+
+    burger.addEventListener('click', () => {
+      const isOpen = dropdown.classList.toggle('open');
+      burger.classList.toggle('open', isOpen);
+      burger.setAttribute('aria-expanded', String(isOpen));
+    });
+
+    function closeDropdown() {
+      dropdown.classList.remove('open');
+      burger.classList.remove('open');
+      burger.setAttribute('aria-expanded', 'false');
+    }
+
+    document.querySelectorAll('#dd-products, #dd-about').forEach(a => {
+      a.addEventListener('click', closeDropdown);
+    });
+
+    document.addEventListener('click', e => {
+      if (!burger.contains(e.target) && !dropdown.contains(e.target)) closeDropdown();
+    });
+
+    /* ── PROFILE PANEL ── */
+    const profileOverlay = document.getElementById('profile-overlay');
+    const profilePanel   = document.getElementById('profile-panel');
+
+    function openProfile() {
+      const active = allProducts.filter(p => p.live);
+      const sysList = document.getElementById('profile-systems');
+      if (active.length === 0) {
+        sysList.innerHTML = '<div style="background:#FFFFFF;border:1px solid #E8E8F0;border-radius:8px;padding:1rem"><p style=\"font-size:0.8rem;color:#A0A0C0;line-height:1.6\">No active products yet. Products you unlock or subscribe to will appear here.</p></div>';
+      } else {
+        sysList.innerHTML = active.map(p => `
+          <div style="display:flex;align-items:center;justify-content:space-between;
+            background:#FFFFFF;border:1px solid #E8E8F0;border-radius:8px;
+            padding:0.85rem 1rem;margin-bottom:6px;cursor:pointer"
+            onclick="window.open('${p.url}','_blank')">
+            <div>
+              <div style="font-family:'Space Grotesk',sans-serif;font-weight:600;
+                font-size:0.88rem;color:#0D0E1A;margin-bottom:2px">${p.name}</div>
+              <div style="font-family:'Space Grotesk',sans-serif;font-size:0.58rem;
+                letter-spacing:0.14em;text-transform:uppercase;color:#A0A0C0">${p.coord}</div>
+            </div>
+            <div style="display:flex;align-items:center;gap:6px">
+              <span style="width:6px;height:6px;border-radius:50%;background:#10B981;
+                box-shadow:0 0 6px #10B981;display:inline-block"></span>
+              <span style="font-family:'Space Grotesk',sans-serif;font-size:0.6rem;
+                font-weight:600;letter-spacing:0.14em;text-transform:uppercase;
+                color:#10B981">Live</span>
+            </div>
+          </div>`).join('');
+      }
+      profileOverlay.classList.add('open');
+      profilePanel.classList.add('open');
+      profilePanel.scrollTop = 0;
+      document.body.style.overflow = 'hidden';
+      history.pushState({ panel: 'profile' }, '');
+    }
+
+    function closeProfile() {
+      profileOverlay.classList.remove('open');
+      profilePanel.classList.remove('open');
+      document.body.style.overflow = '';
+    }
+
+    document.getElementById('profile-close').addEventListener('click', () => {
+      if (history.state?.panel) history.back(); else closeProfile();
+    });
+    profileOverlay.addEventListener('click', () => {
+      if (history.state?.panel) history.back(); else closeProfile();
+    });
+    document.getElementById('dd-profile').addEventListener('click', e => {
+      e.preventDefault(); closeDropdown(); openProfile();
+    });
+
+    /* ── CHANGELOG PANEL ── */
+    const changelogOverlay = document.getElementById('changelog-overlay');
+    const changelogPanel   = document.getElementById('changelog-panel');
+
+    const changelog = [
+      {
+        version: 'v0.4', date: 'Jun 2026',
+        items: [
+          'Ascension (NE·005) and Vulcan (NE·006) added to the ecosystem',
+          'Profile framework established in navigation',
+          'Changelog introduced',
+          'About section updated to reflect full ecosystem identity',
+          '"See All Products" toggle added to product grid'
+        ]
+      },
+      {
+        version: 'v0.3', date: 'Jun 2026',
+        items: [
+          'Shadow Cartographer renamed to Shadow System (NE·004)',
+          'Shadow System deployed to GitHub Pages — first live product',
+          'GitHub Actions pipeline for daily fixture data fetch',
+          'Dual-engine architecture: Cartographer + Gold modes live'
+        ]
+      },
+      {
+        version: 'v0.2', date: 'Jun 2026',
+        items: [
+          'Noven Empire PWA installed on device',
+          'Icon designed and integrated (geometric N-mark)',
+          'Hamburger nav with centered wordmark',
+          'Slide panel navigation for product detail',
+          'Dark hero / white content / dark footer composition'
+        ]
+      },
+      {
+        version: 'v0.1', date: 'Jun 2026',
+        items: [
+          'Noven Empire hub established',
+          'Four products defined: Requiem, Morpheus, IDLE EMPIRE, Shadow Cartographer',
+          'Tagline: Where ambition becomes architecture',
+          'Visual identity: Space Grotesk, indigo accent, blueprint coordinate system'
+        ]
+      }
+    ];
+
+    function openChangelog() {
+      document.getElementById('changelog-list').innerHTML = changelog.map(c => `
+        <div style="background:#FFFFFF;border:1px solid #E8E8F0;border-radius:8px;
+          padding:1.1rem;margin-bottom:0.75rem">
+          <div style="font-family:'JetBrains Mono',monospace;font-size:0.75rem;font-weight:500;color:#4F46E5;margin-bottom:3px">${c.version}</div>
+          <div style="font-family:'Space Grotesk',sans-serif;font-size:0.6rem;letter-spacing:0.14em;text-transform:uppercase;color:#A0A0C0;margin-bottom:0.7rem">${c.date}</div>
+          <ul style="list-style:none">${c.items.map(i => `
+            <li style="font-size:0.82rem;color:#5A5A78;padding:3px 0 3px 1rem;position:relative;line-height:1.5">
+              <span style="position:absolute;left:0;color:#C0C0D8">—</span>${i}
+            </li>`).join('')}
+          </ul>
+        </div>`).join('');
+      changelogOverlay.classList.add('open');
+      changelogPanel.classList.add('open');
+      changelogPanel.scrollTop = 0;
+      document.body.style.overflow = 'hidden';
+      history.pushState({ panel: 'changelog' }, '');
+    }
+
+    function closeChangelog() {
+      changelogOverlay.classList.remove('open');
+      changelogPanel.classList.remove('open');
+      document.body.style.overflow = '';
+    }
+
+    document.getElementById('changelog-close').addEventListener('click', () => {
+      if (history.state?.panel) history.back(); else closeChangelog();
+    });
+    changelogOverlay.addEventListener('click', () => {
+      if (history.state?.panel) history.back(); else closeChangelog();
+    });
+    document.getElementById('dd-changelog').addEventListener('click', e => {
+      e.preventDefault(); closeDropdown(); openChangelog();
+    });
+
+    /* ── GENERIC SIMPLE PANEL HELPER ── */
+    function wireSimplePanel(key) {
+      const overlay = document.getElementById(`${key}-overlay`);
+      const p       = document.getElementById(`${key}-panel`);
+      const closeBtn= document.getElementById(`${key}-close`);
+
+      function open() {
+        overlay.classList.add('open');
+        p.classList.add('open');
+        p.scrollTop = 0;
+        document.body.style.overflow = 'hidden';
+        history.pushState({ panel: key }, '');
+      }
+      function close() {
+        overlay.classList.remove('open');
+        p.classList.remove('open');
+        document.body.style.overflow = '';
+      }
+      closeBtn.addEventListener('click', () => { if (history.state?.panel) history.back(); else close(); });
+      overlay.addEventListener('click', () => { if (history.state?.panel) history.back(); else close(); });
+      return { open, close, el: p };
+    }
+
+    const statusPanelCtl  = wireSimplePanel('status');
+    const contactPanelCtl = wireSimplePanel('contact');
+    const loginPanelCtl   = wireSimplePanel('login');
+    const privacyPanelCtl = wireSimplePanel('privacy');
+    const termsPanelCtl   = wireSimplePanel('terms');
+
+    /* ── SYSTEM STATUS DATA ── */
+    function openStatus() {
+      const statusMap = allProducts.map(p => ({
+        name: p.name, coord: p.coord,
+        state: p.live ? 'Online' : 'In Development'
+      }));
+      document.getElementById('status-list').innerHTML = statusMap.map(s => `
+        <div style="display:flex;align-items:center;justify-content:space-between;
+          background:#FFFFFF;border:1px solid #E8E8F0;border-radius:8px;
+          padding:0.85rem 1rem;margin-bottom:6px">
+          <div>
+            <div style="font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:0.85rem;color:#0D0E1A">${s.name}</div>
+            <div style="font-family:'Space Grotesk',sans-serif;font-size:0.58rem;letter-spacing:0.14em;text-transform:uppercase;color:#A0A0C0;margin-top:2px">${s.coord}</div>
+          </div>
+          <div style="display:flex;align-items:center;gap:6px">
+            <span style="width:6px;height:6px;border-radius:50%;background:${s.state==='Online'?'#10B981':'#D1D1E0'};${s.state==='Online'?'box-shadow:0 0 6px #10B981':''};display:inline-block"></span>
+            <span style="font-family:'Space Grotesk',sans-serif;font-size:0.6rem;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;color:${s.state==='Online'?'#10B981':'#A0A0C0'}">${s.state}</span>
+          </div>
+        </div>`).join('');
+      statusPanelCtl.open();
+    }
+
+    document.getElementById('dd-status').addEventListener('click', e => {
+      e.preventDefault(); closeDropdown(); openStatus();
+    });
+    document.getElementById('dd-contact').addEventListener('click', e => {
+      e.preventDefault(); closeDropdown(); contactPanelCtl.open();
+    });
+    document.getElementById('dd-login').addEventListener('click', e => {
+      e.preventDefault(); closeDropdown(); loginPanelCtl.open();
+    });
+    document.getElementById('dd-privacy').addEventListener('click', e => {
+      e.preventDefault(); privacyPanelCtl.open();
+    });
+    document.getElementById('dd-terms').addEventListener('click', e => {
+      e.preventDefault(); termsPanelCtl.open();
+    });
+
+    /* ── LOGIN / REGISTER TOGGLE ── */
+    let loginMode = 'login';
+    document.getElementById('login-toggle-link').addEventListener('click', e => {
+      e.preventDefault();
+      loginMode = loginMode === 'login' ? 'register' : 'login';
+      const isLogin = loginMode === 'login';
+      document.getElementById('login-title-tag').textContent = isLogin ? 'Login' : 'Register';
+      document.getElementById('login-panel-heading').textContent = isLogin ? 'Sign In' : 'Create Account';
+      document.getElementById('login-panel-btn').textContent = isLogin ? 'Sign In' : 'Create Account';
+      document.getElementById('login-toggle-prompt').textContent = isLogin ? "Don't have an account?" : 'Already have an account?';
+      document.getElementById('login-toggle-link').textContent = isLogin ? 'Register' : 'Login';
+    });
+
+    /* ── BACK BUTTON — handles all panels ── */
+    window.addEventListener('popstate', () => {
+      if (panel.classList.contains('open'))               closePanel();
+      else if (profilePanel.classList.contains('open'))   closeProfile();
+      else if (changelogPanel.classList.contains('open')) closeChangelog();
+      else if (statusPanelCtl.el.classList.contains('open'))  statusPanelCtl.close();
+      else if (contactPanelCtl.el.classList.contains('open')) contactPanelCtl.close();
+      else if (loginPanelCtl.el.classList.contains('open'))   loginPanelCtl.close();
+      else if (privacyPanelCtl.el.classList.contains('open')) privacyPanelCtl.close();
+      else if (termsPanelCtl.el.classList.contains('open'))   termsPanelCtl.close();
+    });
+
+    /* ── LIVE PULSE ANIMATION ── */
+    const liveStyle = document.createElement('style');
+    liveStyle.textContent = '@keyframes pulse-live { 0%,100%{opacity:1} 50%{opacity:0.3} }';
+    document.head.appendChild(liveStyle);
+
+    /* ── SERVICE WORKER ── */
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('./sw.js').catch(() => {});
+    }
+  }); // end DOMContentLoaded
+  </script>
+
+
+</body>
+</html>
